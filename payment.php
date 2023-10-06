@@ -11,8 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tokenId = $_POST["tokenId"];
 
     try {
-        // $customers = $stripe->customers->all(['email' => $email]);
-        // var_dump(count($customers['data']));
         $stripe->charges->create([
             'amount' => ((int) $amount) * 100,
             'currency' => 'aud',
