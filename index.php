@@ -3,6 +3,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <title>Topshare Portfolio Manager</title>
 </head>
 
@@ -34,23 +35,23 @@
                                     <h3 class="stripe-payment-form-section">Payment Options</h3>
                                     <div class="stripe-payment-form-row">
                                         <label>Australian Dollar</label>
-                                        <input type="text" size="20" name="amount" class="amountShown required"
-                                            value="50" autocomplete="off">
+                                        <input type="text" size="20" id="amount" class="amountShown required" value="50"
+                                            autocomplete="off">
                                     </div>
                                     <h3 class="stripe-payment-form-section">Billing Information</h3>
                                     <div class="stripe-payment-form-row">
                                         <label>First Name</label>
-                                        <input type="text" size="20" name="fname" class="fname required" value=""
+                                        <input type="text" size="20" id="fname" class="fname required" value=""
                                             autocomplete="off">
                                     </div>
                                     <div class="stripe-payment-form-row">
                                         <label>Last Name</label>
-                                        <input type="text" size="20" name="lname" class="lname required" value=""
+                                        <input type="text" size="20" id="lname" class="lname required" value=""
                                             autocomplete="off">
                                     </div>
                                     <div class="stripe-payment-form-row">
                                         <label>Email Address</label>
-                                        <input type="text" size="20" name="email" class="email email required" value=""
+                                        <input type="text" size="20" id="email" class="email email required" value=""
                                             autocomplete="off">
                                     </div>
                                     <h3 class="stripe-payment-form-section">Payment Information</h3>
@@ -163,77 +164,25 @@
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
+        var amount = document.getElementById("amount").value;
+        var fname = document.getElementById("fname").value;
+        var lname = document.getElementById("lname").value;
+        var email = document.getElementById("email").value;
+
         stripe.createToken(cardNumberElement).then((result) => {
-            console.log(result.token.id)
+            if (result.token) {
+                $.post("payment.php", {
+                    amount: amount,
+                    name: fname + " " + lname,
+                    email: email,
+                    tokenId: result.token.id
+                }, function (data) {
+                    document.getElementById("error-msg").innerHTML = data
+                });
+            } else {
+                document.getElementById("error-msg").innerHTML = result.error.message
+            }
         })
-
-        // var amount = document.getElementById('amount').value;
-        // var fname = document.getElementById('fname').value;
-        // var lname = document.getElementById('lname').value;
-        // var email = document.getElementById('email').value;
-        // var cardNumber = document.getElementById('cardNumber').value;
-        // var month = document.getElementById('month').value;
-        // var year = document.getElementById('year').value.substring(2);
-        // var cvv = document.getElementById('cvc').value;
-
-        // var cardNumber = '4242424242424242'; // Card number (replace with user input)
-        // var expMonth = '12'; // Expiration month (replace with user input)
-        // var expYear = '25'; // Expiration year (replace with user input)
-        // var cvc = '123'; // CVC/CVV (replace with user input)
-
-        // // Create a token with the card details.
-        // stripe.createToken('card', {
-        //     number: cardNumber,
-        //     exp_month: expMonth,
-        //     exp_year: expYear,
-        //     cvc: cvc,
-        // }).then(function (result) {
-        //     if (result.error) {
-        //         // Handle errors (e.g., invalid card details).
-        //         console.error(result.error);
-        //     } else {
-        //         // Token represents the card information.
-        //         var token = result.token;
-
-        //         // Access card details from the token object.
-        //         var cardBrand = token.card.brand; // Card brand (e.g., Visa, Mastercard).
-        //         var cardLast4 = token.card.last4; // Last 4 digits of the card number.
-
-        //         // You can use these card details as needed (e.g., display them to the user).
-        //         console.log('Card brand:', cardBrand);
-        //         console.log('Last 4 digits:', cardLast4);
-
-        //         // Now you can send the token to your server for payment processing.
-        //         // Send the token to your server via AJAX or another method.
-        //     }
-        // });
-
-        // Create a payment method with collected card details
-        // stripe.createPaymentMethod({
-        //     type: 'card',
-        //     card: {
-        //         number: cardNumber,
-        //         exp_month: month,
-        //         exp_year: year,
-        //         cvc: cvv,
-        //     },
-        //     billing_details: {
-        //         name: `${fname} ${lname}`,
-        //         email: email,
-        //     },
-        // }).then(function (result) {
-        //     if (result.error) {
-        //         // Handle error
-        //         console.error(result.error);
-        //         var errorElement = document.getElementById('error-msg');
-        //         errorElement.innerHTML = result.error.message;
-        //         console.log(result.error.message)
-        //     } else {
-        //         var paymentMethodId = result.paymentMethod.id;
-        //         console.log(result);
-        //         // Submit paymentMethodId to your server for further processing
-        //     }
-        // });
     });
 </script>
 
