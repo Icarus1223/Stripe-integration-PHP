@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'capture_method' => 'automatic',
         ]);
 
-        $stripe->paymentIntents->confirm(
+        $confirmed_payment_intent = $stripe->paymentIntents->confirm(
             $paymentIntent['id'],
             [
                 'payment_method' => $paymenMethod['id'],
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         echo json_encode(array(
             'msg' => "Success!!!",
-            'transactionId' => $paymentIntent['id']
+            'transactionId' => $confirmed_payment_intent->latest_charge
         ));
     } catch (Exception $e) {
         echo json_encode(array(
