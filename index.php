@@ -35,8 +35,8 @@
                                     <h3 class="stripe-payment-form-section">Payment Options</h3>
                                     <div class="stripe-payment-form-row">
                                         <label>Australian Dollar</label>
-                                        <input type="text" size="20" id="amount" class="amountShown required" value="50"
-                                            autocomplete="off">
+                                        <input type="text" size="20" id="amount" disabled class="amountShown required"
+                                            value="299.00" autocomplete="off">
                                     </div>
                                     <h3 class="stripe-payment-form-section">Billing Information</h3>
                                     <div class="stripe-payment-form-row">
@@ -79,13 +79,13 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="stripe-payment-receipt">
+                            <div class="stripe-payment-receipt" id="payment-success">
                                 <p></p>
-                                <p><strong>Thank You, {fname} {lname}</strong>
+                                <p><strong>Thank You, <span id="success-name"></span></strong>
                                 </p>
-                                <p><strong>$ {amount} is making its way to our bank account.</strong></p>
-                                <p>A receipt has been sent to <strong>{email}</strong>.</p>
-                                <p>Transaction ID: {id}</p>
+                                <p><strong>$299.00 is making its way to our bank account.</strong></p>
+                                <p>A receipt has been sent to <strong id="success-email"></strong>.</p>
+                                <p>Transaction ID: <span id="success-id"><span></p>
                                 <p></p>
                             </div>
                         </div>
@@ -177,8 +177,14 @@
                     email: email,
                     tokenId: result.token.id
                 }, function (data) {
-                    document.getElementById("error-msg").innerHTML = data
-                });
+                    document.getElementById("error-msg").innerHTML = data.msg;
+                    if (data.transactionId) {
+                        document.getElementById("success-name").innerHTML = fname + " " + lname
+                        document.getElementById("success-email").innerHTML = email
+                        document.getElementById("success-id").innerHTML = data.transactionId
+                        document.getElementById("payment-success").style.display = 'block'
+                    }
+                }, "json");
             } else {
                 document.getElementById("error-msg").innerHTML = result.error.message
             }

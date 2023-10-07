@@ -11,12 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tokenId = $_POST["tokenId"];
 
     try {
-        // $stripe->charges->create([
-        //     'amount' => ((int) $amount) * 100,
-        //     'currency' => 'aud',
-        //     'source' => $tokenId,
-        //     'description' => 'Stripe Charge',
-        // ]);
 
         $paymenMethod = $stripe->paymentMethods->create([
             'type' => 'card',
@@ -44,9 +38,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ]
         );
 
-        echo "Success!!!";
+        echo json_encode(array(
+            'msg' => "Success!!!",
+            'transactionId' => $paymentIntent['id']
+        ));
     } catch (Exception $e) {
-        echo "Stripe Payment Error:" . $e->getMessage();
+        echo json_encode(array(
+            'msg' => "Stripe Payment Error:" . $e->getMessage()
+        ));
     }
 }
 ?>
