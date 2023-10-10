@@ -29,9 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'payment_method_types' => ['card'],
             'payment_method' => $paymenMethod['id'],
             'capture_method' => 'automatic',
+            'metadata' => [
+                'email' => $email,
+                'name' => $name
+            ],
         ]);
 
-        $confirmed_payment_intent = $stripe->paymentIntents->confirm(
+        $stripe->paymentIntents->confirm(
             $paymentIntent['id'],
             [
                 'payment_method' => $paymenMethod['id'],
@@ -40,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         echo json_encode(array(
             'msg' => "Success!!!",
-            'transactionId' => $confirmed_payment_intent->latest_charge
+            'transactionId' => $paymentIntent['id']
         ));
     } catch (Exception $e) {
         echo json_encode(array(
